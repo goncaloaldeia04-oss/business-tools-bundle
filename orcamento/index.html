@@ -298,6 +298,14 @@ function p2(n){return String(n).padStart(2,'0');}
 function p3(n){return String(n).padStart(3,'0');}
 function fmtPT(s){if(!s)return'';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
 
+// ─── Status config ────────────────────────────────────────
+var ST={
+  draft:{lbl:'Rascunho',bg:'#6b7280'},
+  sent:{lbl:'Enviado',bg:'#2563eb'},
+  accepted:{lbl:'Aceite',bg:'#16a34a'},
+  rejected:{lbl:'Rejeitado',bg:'#dc2626'}
+};
+
 // ─── Init ────────────────────────────────────────────────
 (function(){
   var now=new Date(),exp=new Date(now);
@@ -451,14 +459,6 @@ function newQuote(){
   addMs('50% na entrega final',50);
   render();
 }
-
-// ─── Status config ────────────────────────────────────────
-var ST={
-  draft:{lbl:'Rascunho',bg:'#6b7280'},
-  sent:{lbl:'Enviado',bg:'#2563eb'},
-  accepted:{lbl:'Aceite',bg:'#16a34a'},
-  rejected:{lbl:'Rejeitado',bg:'#dc2626'}
-};
 
 // ─── Render ───────────────────────────────────────────────
 function render(){
