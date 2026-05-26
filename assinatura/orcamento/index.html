@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculadora de Orçamentos</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#222;min-height:100vh;}
+
+header{background:#1a3a5c;color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+header h1{font-size:1.15rem;font-weight:700;letter-spacing:.5px;}
+.hbtns{display:flex;gap:8px;flex-wrap:wrap;}
+.hbtn{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:7px 14px;cursor:pointer;font-size:.84rem;transition:.2s;}
+.hbtn:hover{background:rgba(255,255,255,.25);}
+.hbtn.primary{background:#e8a020;border-color:#e8a020;font-weight:600;}
+.hbtn.primary:hover{background:#d4911a;}
+
+.container{display:flex;min-height:calc(100vh - 52px);}
+.left-panel{width:400px;min-width:300px;background:#fff;border-right:1px solid #d1dde8;overflow-y:auto;flex-shrink:0;}
+.right-panel{flex:1;padding:24px;overflow-y:auto;background:#f0f4f8;}
+
+.acc{border-bottom:1px solid #e8edf4;}
+.acc-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;cursor:pointer;font-weight:600;font-size:.875rem;color:#1a3a5c;user-select:none;background:#fff;transition:.15s;}
+.acc-head:hover{background:#f5f8fc;}
+.acc-arr{transition:.25s;color:#9aa;font-size:.75rem;}
+.acc.open .acc-arr{transform:rotate(90deg);}
+.acc-body{display:none;padding:4px 18px 16px;}
+.acc.open .acc-body{display:block;}
+
+.fg{margin-bottom:10px;}
+label.fl{display:block;font-size:.72rem;font-weight:700;color:#667;margin-bottom:3px;text-transform:uppercase;letter-spacing:.35px;}
+input[type=text],input[type=email],input[type=number],input[type=date],textarea,select{width:100%;border:1px solid #cdd6e0;border-radius:6px;padding:7px 9px;font-size:.87rem;color:#222;background:#fff;outline:none;transition:.2s;font-family:inherit;}
+input:focus,textarea:focus,select:focus{border-color:#1a3a5c;box-shadow:0 0 0 2px rgba(26,58,92,.1);}
+textarea{resize:vertical;min-height:60px;}
+.frow{display:flex;gap:8px;}
+.frow .fg{flex:1;min-width:0;}
+
+.logo-drop{border:2px dashed #cdd6e0;border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:.2s;margin-bottom:10px;position:relative;}
+.logo-drop:hover{border-color:#1a3a5c;background:#f5f8fc;}
+.logo-drop img{max-height:52px;max-width:170px;object-fit:contain;display:block;margin:0 auto;}
+.logo-drop span{color:#9aa;font-size:.8rem;}
+.logo-rm{position:absolute;top:5px;right:8px;background:none;border:none;color:#c44;cursor:pointer;font-size:1rem;line-height:1;display:none;}
+
+.items-hd{display:grid;grid-template-columns:minmax(0,2fr) 58px 86px 60px 68px 26px;gap:4px;padding:4px 0;font-size:.69rem;font-weight:700;color:#889;text-transform:uppercase;letter-spacing:.3px;}
+.item-row{display:grid;grid-template-columns:minmax(0,2fr) 58px 86px 60px 68px 26px;gap:4px;margin-bottom:4px;align-items:center;}
+.item-row input,.item-row select{border:1px solid #cdd6e0;border-radius:5px;padding:5px 6px;font-size:.82rem;width:100%;background:#fff;outline:none;transition:.2s;}
+.item-row input:focus,.item-row select:focus{border-color:#1a3a5c;}
+.item-row .itotal{background:#f5f8fc;color:#1a3a5c;font-weight:600;font-size:.8rem;}
+.btn-add{width:100%;margin-top:6px;background:#f5f8fc;border:1px dashed #bcc;color:#1a3a5c;border-radius:6px;padding:7px;cursor:pointer;font-size:.82rem;transition:.2s;}
+.btn-add:hover{background:#e5eef8;}
+.btn-rm{background:none;border:none;cursor:pointer;color:#c44;font-size:1.1rem;padding:0;line-height:1;border-radius:3px;transition:.15s;}
+.btn-rm:hover{background:#fde;}
+
+.ms-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;}
+.ms-row input{border:1px solid #cdd6e0;border-radius:5px;padding:6px 8px;font-size:.83rem;outline:none;}
+.ms-row input:focus{border-color:#1a3a5c;}
+.ms-di{flex:1;}
+.ms-pi{width:64px!important;}
+
+.disc-wrap{display:flex;gap:10px;align-items:flex-end;}
+.disc-types{display:flex;gap:8px;align-items:center;padding-bottom:7px;}
+.disc-types label{display:flex;align-items:center;gap:3px;font-size:.83rem;color:#555;cursor:pointer;}
+
+.sb{display:none;font-size:.72rem;color:#2aaa70;margin-top:4px;}
+.sb.show{display:inline;}
+
+/* ─── Quote Preview ─── */
+.rp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.rp-top h2{font-size:.95rem;font-weight:700;color:#1a3a5c;}
+.qt-wrap{background:#fff;border-radius:10px;box-shadow:0 3px 20px rgba(0,0,0,.12);overflow:hidden;max-width:800px;margin:0 auto;}
+
+.qt-hdr{background:#1a3a5c;padding:28px 34px 22px;}
+.qt-hdr-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;}
+.qt-co h2{font-size:1.22rem;font-weight:800;color:#fff;margin-bottom:4px;}
+.qt-co p{font-size:.79rem;color:rgba(255,255,255,.75);line-height:1.7;}
+.qt-logo img{max-height:52px;max-width:150px;object-fit:contain;filter:brightness(0) invert(1);}
+.qt-logo-init{width:50px;height:50px;border-radius:8px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:#fff;margin-left:auto;}
+
+.qt-tbar{background:#2255a4;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.qt-tbar h3{font-size:.95rem;font-weight:700;color:#fff;letter-spacing:.3px;}
+.qt-badge{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;color:#fff;white-space:nowrap;}
+
+.qt-body{padding:26px 34px;}
+
+.qt-meta{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:20px;}
+.qt-mi{flex:1;min-width:110px;}
+.qt-mi .lbl{font-size:.67rem;font-weight:700;color:#9aa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.qt-mi .val{font-size:.87rem;color:#222;font-weight:500;}
+.qt-mi .val.hl{color:#e8a020;font-weight:700;}
+
+.qt-div{border:none;border-top:1px solid #e8edf3;margin:18px 0;}
+
+.qt-cl h4,.qt-svc h4,.qt-pay h4,.qt-notes h4{font-size:.67rem;font-weight:700;color:#9aa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.qt-cl .cn{font-size:.97rem;font-weight:700;color:#1a3a5c;margin-bottom:2px;}
+.qt-cl .cd{font-size:.82rem;color:#556;line-height:1.7;}
+
+.qt-svc h4{margin-top:20px;}
+.qt-tbl{width:100%;border-collapse:collapse;}
+.qt-tbl th{background:#f5f8fc;padding:8px 10px;font-size:.71rem;font-weight:700;color:#667;text-transform:uppercase;letter-spacing:.3px;border-bottom:2px solid #dde5ef;text-align:left;}
+.qt-tbl td{padding:9px 10px;font-size:.84rem;color:#333;border-bottom:1px solid #f0f4f8;vertical-align:top;}
+.qt-tbl tr:last-child td{border-bottom:none;}
+.qt-tbl .r{text-align:right;}
+.qt-tbl .fw{font-weight:600;}
+
+.qt-tots{display:flex;justify-content:flex-end;margin-top:18px;}
+.qt-tots-box{min-width:260px;padding-top:10px;border-top:1px solid #e8edf3;}
+.tot-row{display:flex;justify-content:space-between;padding:4px 0;font-size:.86rem;color:#444;}
+.tot-disc{color:#27a06a;font-weight:600;}
+.tot-vat{color:#778;font-size:.8rem;}
+.tot-grand{font-size:1.02rem;font-weight:800;color:#1a3a5c;padding-top:8px;border-top:2px solid #1a3a5c;margin-top:4px;}
+
+.qt-pay{margin-top:22px;background:#f5f8fc;border-radius:8px;padding:16px 18px;}
+.pay-detail{font-size:.83rem;color:#445;margin-bottom:5px;}
+.pay-detail strong{color:#222;}
+.ms-list{display:flex;flex-direction:column;gap:4px;margin-top:8px;}
+.ms-item{display:flex;justify-content:space-between;font-size:.83rem;color:#445;padding:5px 0;border-bottom:1px solid #e0e8f0;}
+.ms-item:last-child{border-bottom:none;}
+.ms-item .mpct{font-weight:700;color:#1a3a5c;}
+
+.qt-notes{margin-top:18px;}
+.qt-notes p{font-size:.83rem;color:#556;line-height:1.75;white-space:pre-wrap;}
+
+.qt-foot{margin-top:28px;padding-top:14px;border-top:1px solid #e8edf3;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;}
+.qt-foot .vd{font-size:.78rem;color:#889;}
+.qt-foot .vd strong{color:#e8a020;}
+.qt-sign{text-align:right;}
+.sign-line{width:150px;border-top:1px solid #bbb;margin:36px 0 4px auto;}
+.sign-name{font-size:.75rem;color:#889;}
+
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  body{background:#fff!important;}
+  header,.left-panel,.rp-top{display:none!important;}
+  .container{display:block!important;}
+  .right-panel{padding:0!important;background:#fff!important;}
+  .qt-wrap{box-shadow:none!important;border-radius:0!important;max-width:100%!important;}
+  @page{size:A4 portrait;margin:12mm 15mm;}
+}
+
+@media(max-width:760px){
+  .container{flex-direction:column;}
+  .left-panel{width:100%;border-right:none;border-bottom:1px solid #d1dde8;}
+  .right-panel{padding:14px;}
+  .items-hd,.item-row{grid-template-columns:minmax(0,1.5fr) 50px 74px 56px 62px 24px;}
+  .qt-hdr-row{flex-direction:column;}
+  .qt-body{padding:18px 20px;}
+  .qt-tbar{flex-direction:column;align-items:flex-start;gap:6px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📊 Calculadora de Orçamentos</h1>
+  <div class="hbtns">
+    <button class="hbtn" onclick="newQuote()">＋ Novo Orçamento</button>
+    <button class="hbtn primary" onclick="window.print()">📄 Exportar PDF</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="left-panel">
+
+    <div class="acc open" id="acc-co">
+      <div class="acc-head" onclick="toggleAcc('acc-co')">🏢 Perfil da Empresa <span class="acc-arr">▶</span></div>
+      <div class="acc-body">
+        <div class="logo-drop" id="logo-drop" onclick="g('logo-inp').click()">
+          <img id="logo-img" style="display:none" alt="Logo">
+          <span id="logo-lbl">Clique para carregar logotipo</span>
+          <button class="logo-rm" id="logo-rm" onclick="rmLogo(event)" title="Remover logo">✕</button>
+          <input type="file" id="logo-inp" accept="image/*" style="display:none" onchange="handleLogo(this)">
+        </div>
+        <div class="fg"><label class="fl">Nome da Empresa</label><input type="text" id="co_name" placeholder="A Minha Empresa, Lda." oninput="sc();render()"></div>
+        <div class="frow">
+          <div class="fg"><label class="fl">NIF/NIPC</label><input type="text" id="co_nif" placeholder="500000000" oninput="sc();render()"></div>
+          <div class="fg"><label class="fl">Telefone</label><input type="text" id="co_phone" placeholder="+351 900 000 000" oninput="sc();render()"></div>
+        </div>
+        <div class="fg"><label class="fl">Email</label><input type="email" id="co_email" placeholder="info@empresa.pt" oninput="sc();render()"></div>
+        <div class="fg"><label class="fl">Endereço</label><textarea id="co_addr" rows="2" placeholder="Rua Exemplo, 123&#10;1000-000 Lisboa" oninput="sc();render()"></textarea></div>
+        <div class="fg"><label class="fl">Website</label><input type="text" id="co_web" placeholder="www.empresa.pt" oninput="sc();render()"></div>
+        <div class="fg"><label class="fl">IBAN</label><input type="text" id="co_iban" placeholder="PT50 0000 0000 0000 0000 0000 0" oninput="sc();render()"></div>
+        <span class="sb" id="sb">✓ Perfil guardado</span>
+      </div>
+    </div>
+
+    <div class="acc open" id="acc-qt">
+      <div class="acc-head" onclick="toggleAcc('acc-qt')">📋 Detalhes do Orçamento <span class="acc-arr">▶</span></div>
+      <div class="acc-body">
+        <div class="frow">
+          <div class="fg"><label class="fl">Nº Orçamento</label><input type="text" id="qt_num" oninput="render()"></div>
+          <div class="fg"><label class="fl">Estado</label>
+            <select id="qt_stat" onchange="render()">
+              <option value="draft">Rascunho</option>
+              <option value="sent">Enviado</option>
+              <option value="accepted">Aceite</option>
+              <option value="rejected">Rejeitado</option>
+            </select>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label class="fl">Data</label><input type="date" id="qt_date" oninput="render()"></div>
+          <div class="fg"><label class="fl">Válido até</label><input type="date" id="qt_valid" oninput="render()"></div>
+        </div>
+        <div class="fg"><label class="fl">Título / Projeto</label><input type="text" id="qt_title" placeholder="Desenvolvimento de Website Institucional" oninput="render()"></div>
+        <div class="fg"><label class="fl">Referência / PO</label><input type="text" id="qt_ref" placeholder="REF-2024-001" oninput="render()"></div>
+      </div>
+    </div>
+
+    <div class="acc open" id="acc-cl">
+      <div class="acc-head" onclick="toggleAcc('acc-cl')">👤 Dados do Cliente <span class="acc-arr">▶</span></div>
+      <div class="acc-body">
+        <div class="fg"><label class="fl">Nome / Empresa</label><input type="text" id="cl_name" placeholder="Cliente, Lda." oninput="render()"></div>
+        <div class="frow">
+          <div class="fg"><label class="fl">NIF</label><input type="text" id="cl_nif" placeholder="500000000" oninput="render()"></div>
+          <div class="fg"><label class="fl">Contacto</label><input type="text" id="cl_contact" placeholder="João Silva" oninput="render()"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label class="fl">Email</label><input type="email" id="cl_email" placeholder="cliente@empresa.pt" oninput="render()"></div>
+          <div class="fg"><label class="fl">Telefone</label><input type="text" id="cl_phone" placeholder="+351 900 000 000" oninput="render()"></div>
+        </div>
+        <div class="fg"><label class="fl">Endereço</label><textarea id="cl_addr" rows="2" placeholder="Rua do Cliente, 456&#10;2000-000 Porto" oninput="render()"></textarea></div>
+      </div>
+    </div>
+
+    <div class="acc open" id="acc-it">
+      <div class="acc-head" onclick="toggleAcc('acc-it')">📦 Serviços / Itens <span class="acc-arr">▶</span></div>
+      <div class="acc-body">
+        <div class="items-hd"><span>Descrição</span><span>Qtd.</span><span>Preço Unit.</span><span>IVA</span><span>Total</span><span></span></div>
+        <div id="items-wrap"></div>
+        <button class="btn-add" onclick="addItem()">+ Adicionar item</button>
+      </div>
+    </div>
+
+    <div class="acc" id="acc-disc">
+      <div class="acc-head" onclick="toggleAcc('acc-disc')">🏷️ Desconto <span class="acc-arr">▶</span></div>
+      <div class="acc-body">
+        <div class="disc-wrap">
+          <div class="fg" style="flex:1;margin-bottom:0"><label class="fl">Valor</label><input type="number" id="disc_val" min="0" step="0.01" placeholder="0" oninput="render()"></div>
+          <div class="disc-types">
+            <label><input type="radio" name="dtyp" value="pct" checked onchange="render()"> %</label>
+            <label><input type="radio" name="dtyp" value="eur" onchange="render()"> €</label>
+          </div>
+        </div>
+        <div class="fg" style="margin-top:8px"><label class="fl">Motivo (opcional)</label><input type="text" id="disc_why" placeholder="Desconto de parceiro" oninput="render()"></div>
+      </div>
+    </div>
+
+    <div class="acc" id="acc-pay">
+      <div class="acc-head" onclick="toggleAcc('acc-pay')">💳 Condições de Pagamento <span class="acc-arr">▶</span></div>
+      <div class="acc-body">
+        <div class="fg"><label class="fl">Método</label>
+          <select id="pay_meth" onchange="render()">
+            <option>Transferência Bancária</option>
+            <option>MB Way</option>
+            <option>Cheque</option>
+            <option>Numerário</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="fg" style="margin-top:8px"><label class="fl">Fases de pagamento</label>
+          <div id="ms-wrap"></div>
+          <button class="btn-add" style="margin-top:5px" onclick="addMs()">+ Adicionar fase</button>
+        </div>
+        <div class="fg" style="margin-top:8px"><label class="fl">Prazo de entrega</label><input type="text" id="pay_dead" placeholder="4 semanas após aprovação" oninput="render()"></div>
+      </div>
+    </div>
+
+    <div class="acc" id="acc-notes">
+      <div class="acc-head" onclick="toggleAcc('acc-notes')">📝 Observações <span class="acc-arr">▶</span></div>
+      <div class="acc-body">
+        <div class="fg"><label class="fl">Notas / Condições gerais</label>
+          <textarea id="notes" rows="4" placeholder="Inclui 3 revisões.&#10;Alterações fora do âmbito serão orçamentadas separadamente.&#10;O orçamento não inclui custos de domínio ou alojamento." oninput="render()"></textarea>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="right-panel">
+    <div class="rp-top">
+      <h2>Pré-visualização</h2>
+      <button class="hbtn primary" onclick="window.print()">📄 Exportar PDF</button>
+    </div>
+    <div class="qt-wrap" id="qt"></div>
+  </div>
+</div>
+
+<script>
+var logoB64=null,itemSeq=0,msSeq=0,saveTimer=null;
+
+function g(id){return document.getElementById(id);}
+function v(id){var e=g(id);return e?e.value:'';}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmt(n){return n.toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function df(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());}
+function p2(n){return String(n).padStart(2,'0');}
+function p3(n){return String(n).padStart(3,'0');}
+function fmtPT(s){if(!s)return'';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+
+// ─── Init ────────────────────────────────────────────────
+(function(){
+  var now=new Date(),exp=new Date(now);
+  exp.setDate(exp.getDate()+30);
+  g('qt_date').value=df(now);
+  g('qt_valid').value=df(exp);
+  var n=0;
+  try{n=parseInt(localStorage.getItem('orc_n')||'0');}catch(e){}
+  n++;
+  try{localStorage.setItem('orc_n',n);}catch(e){}
+  g('qt_num').value='ORC-'+now.getFullYear()+'-'+p3(n);
+  loadCo();
+  addItem();
+  addMs('50% na aprovação do orçamento',50);
+  addMs('50% na entrega final',50);
+  render();
+})();
+
+// ─── Company ─────────────────────────────────────────────
+function sc(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(function(){
+    try{localStorage.setItem('orc_co',JSON.stringify({
+      name:v('co_name'),nif:v('co_nif'),phone:v('co_phone'),email:v('co_email'),
+      addr:v('co_addr'),web:v('co_web'),iban:v('co_iban'),logo:logoB64
+    }));}catch(e){}
+    var b=g('sb');b.classList.add('show');setTimeout(function(){b.classList.remove('show');},2000);
+  },700);
+}
+
+function loadCo(){
+  try{
+    var d=JSON.parse(localStorage.getItem('orc_co')||'null');
+    if(!d)return;
+    ['name','nif','phone','email','addr','web','iban'].forEach(function(k){
+      var el=g('co_'+k);if(el&&d[k])el.value=d[k];
+    });
+    if(d.logo){
+      logoB64=d.logo;
+      g('logo-img').src=d.logo;g('logo-img').style.display='';
+      g('logo-lbl').style.display='none';g('logo-rm').style.display='';
+    }
+  }catch(e){}
+}
+
+function handleLogo(inp){
+  var f=inp.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    logoB64=e.target.result;
+    g('logo-img').src=logoB64;g('logo-img').style.display='';
+    g('logo-lbl').style.display='none';g('logo-rm').style.display='';
+    sc();render();
+  };
+  r.readAsDataURL(f);
+}
+
+function rmLogo(e){
+  e.stopPropagation();
+  logoB64=null;
+  g('logo-img').src='';g('logo-img').style.display='none';
+  g('logo-lbl').style.display='';g('logo-rm').style.display='none';
+  sc();render();
+}
+
+// ─── Accordion ────────────────────────────────────────────
+function toggleAcc(id){g(id).classList.toggle('open');}
+
+// ─── Items ────────────────────────────────────────────────
+function addItem(){
+  itemSeq++;var id='it'+itemSeq;
+  var d=document.createElement('div');d.className='item-row';d.id=id;
+  d.innerHTML='<input type="text" class="idesc" placeholder="Serviço…" oninput="render()">'
+    +'<input type="number" class="iqty" value="1" min="0" step="0.01" oninput="render()">'
+    +'<input type="number" class="iprice" placeholder="0.00" min="0" step="0.01" oninput="render()">'
+    +'<select class="ivat" onchange="render()"><option value="23">23%</option><option value="13">13%</option><option value="6">6%</option><option value="0">Isen.</option></select>'
+    +'<input type="text" class="itotal" readonly>'
+    +'<button class="btn-rm" onclick="rmEl(\''+id+'\')" title="Remover">×</button>';
+  g('items-wrap').appendChild(d);
+  render();
+}
+
+function rmEl(id){var e=g(id);if(e){e.remove();render();}}
+
+function getItems(){
+  return Array.from(g('items-wrap').querySelectorAll('.item-row')).map(function(r){
+    var qty=parseFloat(r.querySelector('.iqty').value)||0;
+    var price=parseFloat(r.querySelector('.iprice').value)||0;
+    var vat=parseFloat(r.querySelector('.ivat').value)||0;
+    var total=qty*price;
+    r.querySelector('.itotal').value=fmt(total);
+    return{desc:r.querySelector('.idesc').value.trim(),qty:qty,price:price,vat:vat,total:total};
+  });
+}
+
+function calcTots(items){
+  var sub=0,vatBase={};
+  items.forEach(function(it){
+    sub+=it.total;
+    if(!vatBase[it.vat])vatBase[it.vat]=0;
+    vatBase[it.vat]+=it.total;
+  });
+  var dv=parseFloat(v('disc_val'))||0;
+  var dm=(document.querySelector('input[name="dtyp"]:checked')||{value:'pct'}).value;
+  var da=dm==='pct'?sub*(dv/100):dv;
+  if(da>sub)da=sub;if(da<0)da=0;
+  var snd=sub-da,vt=0,vatAdj={};
+  if(sub>0){
+    var ratio=snd/sub;
+    Object.keys(vatBase).forEach(function(k){
+      vatAdj[k]=vatBase[k]*ratio*(k/100);
+      vt+=vatAdj[k];
+    });
+  }
+  return{sub:sub,da:da,snd:snd,vatMap:vatAdj,vt:vt,grand:snd+vt};
+}
+
+// ─── Milestones ───────────────────────────────────────────
+function addMs(desc,pct){
+  msSeq++;var id='ms'+msSeq;
+  var d=document.createElement('div');d.className='ms-row';d.id=id;
+  d.innerHTML='<input type="text" class="ms-di" placeholder="Fase de pagamento…" oninput="render()">'
+    +'<input type="number" class="ms-pi" placeholder="%" min="0" max="100" oninput="render()">'
+    +'<button class="btn-rm" onclick="rmEl(\''+id+'\')" title="Remover">×</button>';
+  g('ms-wrap').appendChild(d);
+  if(desc!==undefined)d.querySelector('.ms-di').value=desc;
+  if(pct!==undefined)d.querySelector('.ms-pi').value=pct;
+  render();
+}
+
+function getMss(){
+  return Array.from(g('ms-wrap').querySelectorAll('.ms-row')).map(function(r){
+    return{desc:r.querySelector('.ms-di').value.trim(),pct:parseFloat(r.querySelector('.ms-pi').value)||0};
+  }).filter(function(m){return m.desc;});
+}
+
+// ─── New Quote ────────────────────────────────────────────
+function newQuote(){
+  if(!confirm('Criar novo orçamento? Os dados do cliente e itens serão apagados.'))return;
+  var now=new Date(),exp=new Date(now);exp.setDate(exp.getDate()+30);
+  var n=0;try{n=parseInt(localStorage.getItem('orc_n')||'0');}catch(e){}
+  n++;try{localStorage.setItem('orc_n',n);}catch(e){}
+  g('qt_num').value='ORC-'+now.getFullYear()+'-'+p3(n);
+  g('qt_date').value=df(now);g('qt_valid').value=df(exp);g('qt_stat').value='draft';
+  ['qt_title','qt_ref','cl_name','cl_nif','cl_contact','cl_email','cl_phone','cl_addr','disc_val','disc_why','pay_dead','notes'].forEach(function(id){
+    var e=g(id);if(e)e.value='';
+  });
+  g('items-wrap').innerHTML='';itemSeq=0;addItem();
+  g('ms-wrap').innerHTML='';msSeq=0;
+  addMs('50% na aprovação do orçamento',50);
+  addMs('50% na entrega final',50);
+  render();
+}
+
+// ─── Status config ────────────────────────────────────────
+var ST={
+  draft:{lbl:'Rascunho',bg:'#6b7280'},
+  sent:{lbl:'Enviado',bg:'#2563eb'},
+  accepted:{lbl:'Aceite',bg:'#16a34a'},
+  rejected:{lbl:'Rejeitado',bg:'#dc2626'}
+};
+
+// ─── Render ───────────────────────────────────────────────
+function render(){
+  var items=getItems(),tots=calcTots(items),mss=getMss();
+  var coName=v('co_name'),coNif=v('co_nif'),coPhone=v('co_phone'),coEmail=v('co_email');
+  var coAddr=v('co_addr'),coWeb=v('co_web'),coIban=v('co_iban');
+  var clName=v('cl_name'),clNif=v('cl_nif'),clContact=v('cl_contact');
+  var clEmail=v('cl_email'),clPhone=v('cl_phone'),clAddr=v('cl_addr');
+  var qtNum=v('qt_num'),qtDate=v('qt_date'),qtValid=v('qt_valid');
+  var qtTitle=v('qt_title'),qtRef=v('qt_ref');
+  var stat=v('qt_stat')||'draft',st=ST[stat]||ST.draft;
+  var dv=parseFloat(v('disc_val'))||0,dw=v('disc_why');
+  var dm=(document.querySelector('input[name="dtyp"]:checked')||{value:'pct'}).value;
+  var payMeth=v('pay_meth'),payDead=v('pay_dead'),notes=v('notes');
+  var h='';
+
+  // Header
+  h+='<div class="qt-hdr"><div class="qt-hdr-row"><div class="qt-co">';
+  h+='<h2>'+(coName?esc(coName):'<span style="opacity:.4">Nome da Empresa</span>')+'</h2>';
+  var cd=[];
+  if(coNif)cd.push('NIF '+esc(coNif));
+  if(coAddr)cd.push(esc(coAddr).replace(/\n/g,' &middot; '));
+  if(coPhone)cd.push(esc(coPhone));
+  if(coEmail)cd.push(esc(coEmail));
+  if(coWeb)cd.push(esc(coWeb));
+  if(cd.length)h+='<p>'+cd.join(' &nbsp;&middot;&nbsp; ')+'</p>';
+  h+='</div><div class="qt-logo">';
+  if(logoB64)h+='<img src="'+logoB64+'" alt="logo">';
+  else if(coName)h+='<div class="qt-logo-init">'+esc(coName.charAt(0).toUpperCase())+'</div>';
+  h+='</div></div></div>';
+
+  // Title bar
+  h+='<div class="qt-tbar">';
+  h+='<h3>ORÇAMENTO'+(qtTitle?' &mdash; '+esc(qtTitle):'')+'</h3>';
+  h+='<span class="qt-badge" style="background:'+st.bg+'">'+st.lbl+'</span>';
+  h+='</div>';
+
+  // Body
+  h+='<div class="qt-body">';
+
+  // Meta
+  h+='<div class="qt-meta">';
+  h+='<div class="qt-mi"><div class="lbl">Nº Orçamento</div><div class="val">'+esc(qtNum||'—')+'</div></div>';
+  h+='<div class="qt-mi"><div class="lbl">Data</div><div class="val">'+esc(fmtPT(qtDate)||'—')+'</div></div>';
+  h+='<div class="qt-mi"><div class="lbl">Válido até</div><div class="val hl">'+esc(fmtPT(qtValid)||'—')+'</div></div>';
+  if(qtRef)h+='<div class="qt-mi"><div class="lbl">Referência</div><div class="val">'+esc(qtRef)+'</div></div>';
+  h+='</div>';
+
+  h+='<hr class="qt-div">';
+
+  // Client
+  h+='<div class="qt-cl"><h4>Destinatário</h4>';
+  h+='<div class="cn">'+(clName?esc(clName):'<span style="opacity:.35">Nome do Cliente</span>')+'</div>';
+  var cld=[];
+  if(clNif)cld.push('NIF '+esc(clNif));
+  if(clContact)cld.push(esc(clContact));
+  if(clEmail)cld.push(esc(clEmail));
+  if(clPhone)cld.push(esc(clPhone));
+  if(clAddr)cld.push(esc(clAddr).replace(/\n/g,'<br>'));
+  if(cld.length)h+='<div class="cd">'+cld.join('<br>')+'</div>';
+  h+='</div>';
+
+  // Items table
+  h+='<div class="qt-svc"><h4>Serviços e Itens</h4>';
+  h+='<table class="qt-tbl"><thead><tr>';
+  h+='<th>Descrição</th><th class="r">Qtd.</th><th class="r">Preço Unit.</th><th class="r">IVA</th><th class="r">Total</th>';
+  h+='</tr></thead><tbody>';
+  var hasIt=false;
+  items.forEach(function(it){
+    if(!it.desc&&it.total===0)return;
+    hasIt=true;
+    h+='<tr>';
+    h+='<td class="fw">'+esc(it.desc||'—')+'</td>';
+    h+='<td class="r">'+fmt(it.qty)+'</td>';
+    h+='<td class="r">'+fmt(it.price)+' €</td>';
+    h+='<td class="r">'+(it.vat?it.vat+'%':'Isen.')+'</td>';
+    h+='<td class="r fw">'+fmt(it.total)+' €</td>';
+    h+='</tr>';
+  });
+  if(!hasIt)h+='<tr><td colspan="5" style="text-align:center;color:#bbb;padding:20px;font-style:italic;">Adicione itens no painel esquerdo</td></tr>';
+  h+='</tbody></table></div>';
+
+  // Totals
+  h+='<div class="qt-tots"><div class="qt-tots-box">';
+  h+='<div class="tot-row"><span>Subtotal</span><span>'+fmt(tots.sub)+' €</span></div>';
+  if(tots.da>0){
+    var dlbl=dw?esc(dw):'Desconto';
+    var dsuf=dm==='pct'?' ('+dv+'%)':'';
+    h+='<div class="tot-row tot-disc"><span>&minus; '+dlbl+dsuf+'</span><span>&minus; '+fmt(tots.da)+' €</span></div>';
+    h+='<div class="tot-row" style="font-size:.8rem;color:#778;"><span>Base tributável</span><span>'+fmt(tots.snd)+' €</span></div>';
+  }
+  var vkeys=Object.keys(tots.vatMap).filter(function(k){return tots.vatMap[k]>0.001;}).sort(function(a,b){return b-a;});
+  vkeys.forEach(function(k){
+    h+='<div class="tot-row tot-vat"><span>IVA '+k+'%</span><span>'+fmt(tots.vatMap[k])+' €</span></div>';
+  });
+  h+='<div class="tot-row tot-grand"><span>TOTAL</span><span>'+fmt(tots.grand)+' €</span></div>';
+  h+='</div></div>';
+
+  // Payment
+  var showPay=mss.length||payMeth||payDead||coIban;
+  if(showPay){
+    h+='<div class="qt-pay"><h4>Condições de Pagamento</h4>';
+    if(payMeth)h+='<div class="pay-detail"><strong>Método:</strong> '+esc(payMeth)+'</div>';
+    if(coIban)h+='<div class="pay-detail"><strong>IBAN:</strong> '+esc(coIban)+'</div>';
+    if(payDead)h+='<div class="pay-detail"><strong>Prazo de entrega:</strong> '+esc(payDead)+'</div>';
+    if(mss.length){
+      h+='<div class="ms-list">';
+      mss.forEach(function(m){
+        var amt=tots.grand*(m.pct/100);
+        h+='<div class="ms-item"><span>'+esc(m.desc)+'</span><span class="mpct">'+m.pct+'% &mdash; '+fmt(amt)+' €</span></div>';
+      });
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+
+  // Notes
+  if(notes){
+    h+='<div class="qt-notes"><h4>Observações</h4><p>'+esc(notes)+'</p></div>';
+  }
+
+  // Footer
+  h+='<div class="qt-foot">';
+  h+='<div class="vd">'+(qtValid?'Este orçamento é válido até <strong>'+esc(fmtPT(qtValid))+'</strong>.':'')+'</div>';
+  h+='<div class="qt-sign"><div class="sign-line"></div><div class="sign-name">'+(coName?esc(coName):'')+'</div></div>';
+  h+='</div>';
+
+  h+='</div>'; // qt-body
+  g('qt').innerHTML=h;
+}
+</script>
+</body>
+</html>
