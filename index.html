@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Tools Bundle</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1f2937;min-height:100vh}
+header{background:linear-gradient(135deg,#1a3a5c 0%,#2a5080 100%);color:white;padding:56px 24px;text-align:center}
+header h1{font-size:2.4rem;margin-bottom:12px;letter-spacing:-.04em}
+header p{font-size:1.05rem;opacity:.88;max-width:760px;margin:0 auto;line-height:1.6}
+main{max-width:1120px;margin:0 auto;padding:40px 20px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.card{background:white;border-radius:18px;padding:26px;box-shadow:0 8px 28px rgba(15,23,42,.08);border:1px solid #e5eaf2;display:flex;flex-direction:column;min-height:320px}
+.icon{width:54px;height:54px;border-radius:14px;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-bottom:18px}
+h2{font-size:1.25rem;color:#1a3a5c;margin-bottom:10px}
+p{font-size:.95rem;line-height:1.65;color:#4b5563;margin-bottom:18px}
+ul{margin:0 0 22px 18px;color:#4b5563;font-size:.9rem;line-height:1.7;flex:1}
+a.btn{display:inline-flex;justify-content:center;align-items:center;text-decoration:none;background:#1a3a5c;color:white;padding:12px 18px;border-radius:10px;font-weight:700;transition:.2s}
+a.btn:hover{background:#244f7a;transform:translateY(-1px)}
+.note{margin-top:32px;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:16px 18px;color:#7c2d12;font-size:.9rem;line-height:1.6}
+footer{text-align:center;padding:24px;color:#64748b;font-size:.85rem}
+@media(max-width:900px){.grid{grid-template-columns:1fr}header h1{font-size:1.9rem}.card{min-height:auto}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Business Tools Bundle</h1>
+  <p>Simple browser-based tools for freelancers and small businesses: email signatures, professional quotes and invoice-style documents. No backend, no database, no user accounts.</p>
+</header>
+<main>
+  <section class="grid">
+    <article class="card">
+      <div class="icon">✉️</div>
+      <h2>Email Signature Generator</h2>
+      <p>Create professional HTML email signatures directly in the browser.</p>
+      <ul>
+        <li>Live preview</li>
+        <li>Photo, logo and banner upload</li>
+        <li>Social links and CTA button</li>
+        <li>HTML copy/export</li>
+        <li>Gmail and Outlook instructions</li>
+      </ul>
+      <a class="btn" href="assinatura/">Open tool →</a>
+    </article>
+
+    <article class="card">
+      <div class="icon">📊</div>
+      <h2>Quote Generator</h2>
+      <p>Create professional quote/proposal documents for clients.</p>
+      <ul>
+        <li>Company and client details</li>
+        <li>Services, VAT and totals</li>
+        <li>Discounts and payment phases</li>
+        <li>Quote status and validity date</li>
+        <li>PDF export through browser print</li>
+      </ul>
+      <a class="btn" href="orcamento/">Open tool →</a>
+    </article>
+
+    <article class="card">
+      <div class="icon">📄</div>
+      <h2>Invoice Template Generator</h2>
+      <p>Create invoice-style documents for simple business use and record keeping.</p>
+      <ul>
+        <li>Emitter and client details</li>
+        <li>Items, VAT and totals</li>
+        <li>Payment method and IBAN</li>
+        <li>Logo upload</li>
+        <li>PDF export through browser print</li>
+      </ul>
+      <a class="btn" href="fatura/">Open tool →</a>
+    </article>
+  </section>
+
+  <div class="note">
+    <strong>Note:</strong> These tools are lightweight client-side templates. The invoice generator creates invoice-style documents for informational/template use and does not replace certified accounting or tax software where legally required.
+  </div>
+</main>
+<footer>Business Tools Bundle — HTML, CSS and JavaScript</footer>
+</body>
+</html>
